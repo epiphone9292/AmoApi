@@ -26,7 +26,6 @@ class Amo_Api
      */
     private $requester;
 
-
     /**
      * лимит количества запросов в секунду
      * @var int
@@ -34,7 +33,7 @@ class Amo_Api
     public static $limit_per_second = 5;
 
     /**
-     * лимит количества создаваемых сущностей
+     * лимит количества создаваемых сущностей, если надо связать при создании - учитываем каждую связь как еще сущность
      * @var int
      */
     protected $limit_count = 250;
@@ -102,18 +101,19 @@ class Amo_Api
     /**
      * Метод возвращает информацию по доп полям аккаунта
      * @param string $type_element тип сущности, чьи доп. поля нужны
+     *
      * @return array часть ответа от сервера, содержащая только информацию по доп полям
      */
     public function get_field_list(string $type_element = NULL)
     {
         $response_all_field = $this->requester->do_get_request('/api/v2/account?with=custom_fields');
         if ($type_element === NULL) {
-            $list_field_id = $response_all_field['_embedded']['custom_fields'];
+            $list_field = $response_all_field['_embedded']['custom_fields'];
         } else{
-            $list_field_id = $response_all_field['_embedded']['custom_fields'][$type_element];
+            $list_field = $response_all_field['_embedded']['custom_fields'][$type_element];
         }
 
-        return $list_field_id;
+        return $list_field;
     }
 
     /**
@@ -142,9 +142,10 @@ class Amo_Api
     }
 
     /**
-    * @param string 'id'|'all_info'
-    * @return array
-    */
+     * Возвращает информацию по воронке - только id воронок или всё по воронкам и статусам
+     * @param string 'id'|'all_info'
+     * @return array
+     */
     public function get_pipeline($action = 'id')
     {
         $response = $this->requester->do_get_request("/api/v2/pipelines");

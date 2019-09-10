@@ -42,6 +42,13 @@ class Requester
         502 => 'Bad gateway',
         503 => 'Service unavailable',
     ];
+
+    /**
+     * коды CURLINFO_HTTP_CODE, которые игнорим
+     * 401 тут, так как авторизация проверяется только при запросе на авторизацию,
+     * если 401 приходит в обычный запрос - возможно истекла сессия, проверяем попыткой авторизации и если ок - повторяем
+     * @var array
+     */
     const NOT_BAD_CURL_CODE = [200, 204, 401];
 
     public function __construct(string $login, string $api_key, string $subdomen)
